@@ -1,372 +1,382 @@
-// import React, {useEffect} from "react";
-// import {Grid, TextField, Button} from "@mui/material";
-// import {Navigate, useNavigate} from "react-router-dom";
-// import {useDispatch, useSelector} from "react-redux";
-// import {getUser, register} from "../../state/auth/Action";
-// import {ThunkDispatch} from "redux-thunk";
-// import {Action} from "redux";
-//
-//
-// interface AuthState {
-//     jwt: string;
-//     // Other properties of your auth state
-// }
-// const RegisterForm = () => {
-//
-//
-//     const navigate = useNavigate();
-//     const dispatch = useDispatch<ThunkDispatch<{}, {}, Action>>(); // Specify ThunkDispatch type
-//     const jwt=localStorage.getItem("jwt");
-//     const { auth } = useSelector((store: { auth: AuthState }) => store);
-//
-//
-//     useEffect(() => {
-//         const token = localStorage.getItem('jwt');
-//         if (token) {
-//             dispatch(getUser());
-//         }
-//     }, [jwt,auth.jwt]);
-//
-//
-//     // useEffect(() => {
-//     //
-//     // }, []);
-//
-//     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-//         event.preventDefault();
-//         const data = new FormData(event.currentTarget);
-//
-//         const userData = {
-//             firstName: data.get("firstName"),
-//             lastName: data.get("lastName"),
-//             email: data.get("email"),
-//             password: data.get("password"),
-//             phoneNumber: data.get("phoneNumber"),
-//         };
-//
-//         dispatch(register(userData));
-//
-//         console.log(userData);
-//         // Add your form submission logic here
-//     };
-//
-//     return (
-//         <div>
-//             <form onSubmit={handleSubmit}>
-//                 <Grid container spacing={3}>
-//                     <Grid item xs={12} sm={6}>
-//                         <TextField
-//                             required
-//                             id="firstName"
-//                             label="First Name"
-//                             fullWidth
-//                             name="firstName"
-//                             autoComplete="given-name"
-//                         />
-//                     </Grid>
-//                     <Grid item xs={12} sm={6}>
-//                         <TextField
-//                             required
-//                             id="lastName"
-//                             label="Last Name"
-//                             fullWidth
-//                             name="lastName"
-//                             autoComplete="family-name"
-//                         />
-//                     </Grid>
-//
-//                     <Grid item xs={12}>
-//                         <TextField
-//                             required
-//                             id="email"
-//                             label="Email"
-//                             fullWidth
-//                             name="email"
-//                             autoComplete="email"
-//                         />
-//                     </Grid>
-//
-//                     <Grid item xs={12}>
-//                         <TextField
-//                             required
-//                             id="password"
-//                             label="Password"
-//                             fullWidth
-//                             name="password"
-//                             type="password"
-//                         />
-//                     </Grid>
-//
-//                     <Grid item xs={12} sm={6}>
-//                         <TextField
-//                             required
-//                             id="phoneNumber"
-//                             label="Phone Number"
-//                             fullWidth
-//                             name="phoneNumber"
-//                             autoComplete="tel"
-//                         />
-//                     </Grid>
-//
-//                     <Grid item xs={12}>
-//                         <Button
-//                             sx={{
-//                                 width: "100%",
-//                                 backgroundColor: "grey",
-//                                 padding: ".8rem 0",
-//                                 "&:hover": {
-//                                     backgroundColor: "black",
-//                                 },
-//                             }}
-//                             variant="contained"
-//                             type="submit"
-//                         >
-//                             Register Here
-//                         </Button>
-//                     </Grid>
-//                 </Grid>
-//             </form>
-//
-//             <div className={'justify-center flex-col items-center'}>
-//                 <div className={'py-5 flex item-center'}>
-//                     <p>If you already have an account?</p>
-//                     <Button
-//                         onClick={() => navigate("/login")}
-//                         className={'ml-5'}
-//                         size={'small'}
-//                     >
-//                         Login
-//                     </Button>
-//                 </div>
-//             </div>
-//         </div>
-//     );
-// };
-//
-// export default RegisterForm;
+import React, {useState} from 'react';
+import {TextField, Button, Typography, Link, InputAdornment, IconButton} from '@mui/material';
+import {Container, Grid} from '@mui/material';
+import FacebookIcon from '@mui/icons-material/Facebook';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import GoogleIcon from '@mui/icons-material/Google';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import {useNavigate} from 'react-router-dom';
 
+import {useDispatch} from 'react-redux';
+import {ThunkDispatch} from 'redux-thunk';
+import {AnyAction} from 'redux';
+import {toast, ToastContainer} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import React, { useEffect, useState } from "react";
-import { Grid, TextField, Button } from "@mui/material";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser, register } from "../../state/auth/Action";
-import { ThunkDispatch } from "redux-thunk";
-import { Action } from "redux";
-import { toast } from "react-toastify";
-import {API_BASE_URL} from "../config/ApiConfig";
-import axios from "axios";
+import {signUpUser} from "../../redux/auth/AuthSlice";
 
-interface AuthState {
-    jwt: string;
-    // Other properties of your auth state
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+
+interface FormData {
+    firstName: string;
+    lastName: string;
+    email: string;
+    password: string;
+    phoneNumber: string;
+    streetAddress: string;
+    city: string;
+    state: string;
+    zipCode: string;
 }
 
-const RegisterForm = () => {
+function RegisterForm() {
+    const dispatch = useDispatch<ThunkDispatch<{}, {}, AnyAction>>();
     const navigate = useNavigate();
 
-    const dispatch = useDispatch<ThunkDispatch<{}, {}, Action>>(); // Specify ThunkDispatch type
-    const jwt = localStorage.getItem("jwt");
-    const { auth } = useSelector((store: { auth: AuthState }) => store);
+    const [showPassword, setShowPassword] = useState(false);
 
-    const [errors, setErrors] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-        phoneNumber: "",
+    const handleTogglePassword = () => {
+        setShowPassword(!showPassword);
+    };
+    const navigateToLogin = () => {
+        navigate('/login');
+    };
+
+    const [formData, setFormData] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        streetAddress: '',
+        city: '',
+        state: '',
+        zipCode: '',
+
     });
 
-    const [error, setError] = useState(""); // To store error message from the backend
-    const [successMessage, setSuccessMessage] = useState("");
+    const [errors, setErrors] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        streetAddress: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        serverError: '',
+    });
 
-    useEffect(() => {
-        const token = localStorage.getItem("jwt");
-        if (token) {
-            dispatch(getUser());
-        }
-    }, [jwt, auth.jwt]);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value,
+        });
+    };
 
-    const validateForm = (userData: {
-        firstName: string;
-        lastName: string;
-        email: string;
-        password: string;
-        phoneNumber: string;
-    }) => {
-        const newErrors = { ...errors };
 
-        if (!userData.firstName) {
-            newErrors.firstName = "First Name is required";
+    const validateForm = (userData: FormData) => {
+        const newErrors = {...errors};
+
+        // Example validation for each field
+        if (!userData.firstName.trim()) {
+            newErrors.firstName = 'First Name is required!!';
         } else {
-            newErrors.firstName = "";
+            newErrors.firstName = '';
         }
 
-        if (!userData.lastName) {
-            newErrors.lastName = "Last Name is required";
+        if (!userData.lastName.trim()) {
+            newErrors.lastName = 'Last Name is required!!';
         } else {
-            newErrors.lastName = "";
+            newErrors.lastName = '';
         }
 
-        if (!userData.email) {
-            newErrors.email = "Email is required";
+        if (!userData.email.trim()) {
+            newErrors.email = 'Email is required!!';
         } else {
-            newErrors.email = "";
+            newErrors.email = '';
         }
 
-        if (!userData.password) {
-            newErrors.password = "Password is required";
+        if (!userData.password.trim()) {
+            newErrors.password = 'Password is required!!';
         } else {
-            newErrors.password = "";
+            newErrors.password = '';
         }
 
-        if (!userData.phoneNumber) {
-            newErrors.phoneNumber = "Phone Number is required";
+        if (!userData.phoneNumber.trim()) {
+            newErrors.phoneNumber = 'Phone Number is required!!';
         } else {
-            newErrors.phoneNumber = "";
+            newErrors.phoneNumber = '';
         }
 
+        if (!userData.streetAddress.trim()) {
+            newErrors.streetAddress = 'Street Address is required!!';
+        } else {
+            newErrors.streetAddress = '';
+        }
+
+        if (!userData.city.trim()) {
+            newErrors.city = 'City is required!!';
+        } else {
+            newErrors.city = '';
+        }
+
+        if (!userData.state.trim()) {
+            newErrors.state = 'State is required!!';
+        } else {
+            newErrors.state = '';
+        }
+
+        if (!userData.zipCode.trim()) {
+            console.log(errors)
+            newErrors.zipCode = 'Zip Code is required!!';
+        } else {
+            newErrors.zipCode = '';
+        }
+        newErrors.serverError = '';
         setErrors(newErrors);
 
-        return Object.values(newErrors).every((error) => error === "");
+        return Object.values(newErrors).every((error) => error === '');
     };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
 
-        const userData = {
-            firstName: data.get("firstName")?.toString() || "",
-            lastName: data.get("lastName")?.toString() || "",
-            email: data.get("email")?.toString() || "",
-            password: data.get("password")?.toString() || "",
-            phoneNumber: data.get("phoneNumber")?.toString() || "",
-        };
+        // Validate the form with the latest form data
+        const isFormValid = validateForm(formData);
 
-        if (validateForm(userData)) {
-            try {
-                const response1 = await dispatch(register(userData)); // Corrected parentheses
-                console.log("Registration Response:", response1);
+        try {
+            // Dispatch the registerUser action with form data
+            const response = await dispatch(signUpUser(formData));
 
-                const response2 = await axios.post(`${API_BASE_URL}/auth/register`, userData);
-                console.log("Response from Registration API:", response2);
+            // Check if the form is valid before showing success message
+            if (isFormValid) {
+                // Continue with your logic for a valid form
+                // Show a success toast with the message
+                toast.success('Registration successful! Please check your email for a verification link.');
 
-                if (response2 && response2.data && response2.data.error) {
-                    console.log("Registration Failed - Error Message:", response2.data.error);
-                    setError(response2.data.error);
-                    toast.error(response2.data.error);
-                } else {
-                    console.log("Registration Failed - Unexpected Response:", response2);
-                    // setError("Registration failed. Please check your data.");
-                    toast.error("Registration failed. Please check your data.");
-                }
-            } catch (error) {
-                console.error("Registration Error:", error);
-                setError("An error occurred. Please try again later.");
-                toast.error("An error occurred. Please try again later.");
+                // Navigate or perform other actions as needed
+            } else {
+                // Handle invalid form submission
+                toast.error('Please fill in all required fields.');
+                console.log(errors);
             }
+
+            console.log(response);
+        } catch (error: any) {
+            // Explicitly type the 'error' variable as 'any' or use type guards
+            console.error(error);
+
+            if (error.response) {
+                if (error.response.status === 401) {
+                    toast.error('Incorrect data');
+                } else if (error.response.status === 404 || error.response.status === 400) {
+                    toast.error(error.response.data.message || 'Something went wrong on the server');
+                } else {
+                    // Set serverError on other server errors
+                    setErrors({...errors, serverError: 'Something went wrong on the server'});
+
+                    console.error('Error:', error);
+                    console.error('Response:', error.response);
+                }
+            } else {
+                // Handle non-response errors
+                toast.error('Something went wrong. Please try again.');
+            }
+
+            // Perform actions like showing error messages
         }
     };
 
+
     return (
-        <div>
-            {error && <p>{error}</p>}
-            {successMessage && <p>{successMessage}</p>}
+        <Container maxWidth="xl" className="p-3 my-5 mt-50">
             <form onSubmit={handleSubmit}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
+                <Grid container>
+                    <Grid item xs={10} md={6}>
+                        <img
+                            src="https://mdbootstrap.com/img/new/ecommerce/vertical/004.jpg"
+                            className="img-fluid"
+                            alt="Phone image"
+                        />
+                    </Grid>
+                    <Grid item xs={8} md={6} className={''}>
                         <TextField
-                            required
-                            id="firstName"
-                            label="First Name"
                             fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="First name"
                             name="firstName"
-                            autoComplete="given-name"
+                            value={formData.firstName}
+                            onChange={handleChange}
                         />
-                        {errors.firstName && (
-                            <div className="invalid-feedback">{errors.firstName}</div>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
+                        {errors.firstName &&
+                            <div className="invalid-feedback text-red text-red-900">{errors.firstName}</div>}
                         <TextField
-                            required
-                            id="lastName"
-                            label="Last Name"
                             fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="Last name"
                             name="lastName"
-                            autoComplete="family-name"
+                            value={formData.lastName}
+                            onChange={handleChange}
                         />
-                        {errors.lastName && (
-                            <div className="invalid-feedback">{errors.lastName}</div>
-                        )}
-                    </Grid>
-                    <Grid item xs={12}>
+                        {errors.lastName && <div className="invalid-feedback text-red-900">{errors.lastName}</div>}
                         <TextField
-                            required
-                            id="email"
-                            label="Email"
                             fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="Email address"
                             name="email"
-                            autoComplete="email"
+                            value={formData.email}
+                            onChange={handleChange}
                         />
-                        {errors.email && (
-                            <div className="invalid-feedback">{errors.email}</div>
-                        )}
-                    </Grid>
-                    <Grid item xs={12}>
+                        {errors.email && <div className="invalid-feedback text-red-900">{errors.email}</div>}
                         <TextField
-                            required
-                            id="password"
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
                             label="Password"
-                            fullWidth
+                            type={showPassword ? 'text' : 'password'}
                             name="password"
-                            type="password"
-                        />
-                        {errors.password && (
-                            <div className="invalid-feedback">{errors.password}</div>
-                        )}
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            required
-                            id="phoneNumber"
-                            label="Phone Number"
-                            fullWidth
-                            name="phoneNumber"
-                            autoComplete="tel"
-                        />
-                        {errors.phoneNumber && (
-                            <div className="invalid-feedback">{errors.phoneNumber}</div>
-                        )}
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button
-                            sx={{
-                                width: "100%",
-                                backgroundColor: "grey",
-                                padding: ".8rem 0",
-                                "&:hover": {
-                                    backgroundColor: "black",
-                                },
+                            value={formData.password}
+                            onChange={handleChange}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={handleTogglePassword} edge="end">
+                                            {showPassword ? <Visibility/> : <VisibilityOff/>}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
                             }}
+                        />
+                        {errors.password && <div className="invalid-feedback text-red-900">{errors.password}</div>}
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="Phone number"
+                            name="phoneNumber"
+                            value={formData.phoneNumber}
+                            onChange={handleChange}
+                        />
+                        {errors.phoneNumber &&
+                            <div className="invalid-feedback text-red-900">{errors.phoneNumber}</div>}
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="Street address"
+                            name="streetAddress"
+                            value={formData.streetAddress}
+                            onChange={handleChange}
+                        />
+                        {errors.streetAddress &&
+                            <div className="invalid-feedback text-red-900">{errors.streetAddress}</div>}
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="City"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleChange}
+                        />
+                        {errors.city && <div className="invalid-feedback text-red-900">{errors.city}</div>}
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="State"
+                            name="state"
+                            value={formData.state}
+                            onChange={handleChange}
+                        />
+                        {errors.state && <div className="invalid-feedback text-red-900">{errors.state}</div>}
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            variant="standard"
+                            label="Zip code"
+                            name="zipCode"
+                            value={formData.zipCode}
+                            onChange={handleChange}
+                        />
+                        {errors.zipCode && <div className="invalid-feedback text-red-900">{errors.zipCode}</div>}
+
+
+                        {/* Display server error message */}
+                        {errors.serverError && (
+                            <div className="alert alert-danger mt-3">{errors.serverError}</div>
+                        )}
+
+                        <Button
+                            className="mb-4 w-100"
                             variant="contained"
+                            size="large"
                             type="submit"
                         >
-                            Register Here
+                            Sign up
                         </Button>
+
+                        <div className="divider d-flex align-items-center my-4">
+                            <Typography className="text-center fw-bold mx-3 mb-0">OR</Typography>
+                        </div>
+
+                        <div className="sm:flex sm:flex-col sm:space-y-4">
+                            <Button
+                                className="mb-4 w-full"
+                                variant="contained"
+                                size="large"
+                                style={{backgroundColor: '#3b5998'}}
+                            >
+                                <FacebookIcon className="mx-2"/>
+                                Continue with Facebook
+                            </Button>
+                            <Button
+                                className="mb-4 mt-3 w-full"
+                                variant="contained"
+                                size="large"
+                                style={{backgroundColor: '#55acee'}}
+                            >
+                                <TwitterIcon className="mx-2"/>
+                                Continue with Twitter
+                            </Button>
+                            <Button
+                                className="mb-4 mt-3 w-full"
+                                variant="contained"
+                                size="large"
+                                style={{backgroundColor: '#4285F4'}}
+                            >
+                                <GoogleIcon className="mx-2"/>
+                                Continue with Google
+                            </Button>
+                            <Button
+                                className="mb-4 mt-3 w-full"
+                                variant="contained"
+                                size="large"
+                                style={{backgroundColor: '#000000'}}
+                            >
+                                <GitHubIcon className="mx-2"/>
+                                Continue with GitHub
+                            </Button>
+                        </div>
+
+                        <div className="mt-2">
+                            <Typography className="text-center">
+                                If you already have an account?{' '}
+                                <Link href="#" variant="body2" onClick={navigateToLogin}>
+                                    Login
+                                </Link>
+                            </Typography>
+                        </div>
                     </Grid>
                 </Grid>
             </form>
-            <div className={"justify-center flex-col items-center"}>
-                <div className={"py-5 flex item-center"}>
-                    <p>If you already have an account?</p>
-                    <Button onClick={() => navigate("/login")} className={"ml-5"} size={"small"}>
-                        Login
-                    </Button>
-                </div>
-            </div>
-        </div>
+        </Container>
     );
-};
+}
 
 export default RegisterForm;
