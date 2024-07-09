@@ -7,11 +7,13 @@ const Footer = () => {
         <div className={'bg-gradient-to-r from-[#FFDCAB] to-[#AB6B2E] text-black rounded-t-3xl mt-8 md:mt-0'}>
             <div className={'flex flex-col md:flex-row justify-between p-8 md:px-32 px-5'}>
                 <div className={'w-full md:w-1/4'}>
-                    <h1 className={'font-bold text-xl pb-4'}>Coffee With Me</h1>
+                    <h1 className={'font-bold text-xl pb-4'}>Coffee</h1>
                     <p className={'text-lg'}>
-                        Discover a cozy place where every cup tells a story about the love for coffee and the joy of sharing it
+                        Discover a sustainable oasis where every harvest tells a story about the love for nature and the
+                        joy of sharing it
                         with you.
                     </p>
+
                 </div>
                 <div className={'md:ml-12'}>
                     <h1 className={'font-medium text-xl pb-4 pt-5 md:pt-0'}>Links</h1>
@@ -33,16 +35,27 @@ const Footer = () => {
                 <div className={'md:ml-12'}>
                     <h1 className={'font-medium text-xl pb-4 pt-5 md:pt-0'}>Menu</h1>
                     <nav className={'flex flex-col gap-2'}>
-                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/">
-                            Cappuccino
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/arabica">
+                            Arabica Coffee
                         </a>
-                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/">
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/robusta">
+                            Robusta Coffee
+                        </a>
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/espresso">
+                            Espresso
+                        </a>
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/latte">
                             Latte
                         </a>
-                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/">
-                            Americano
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/black-coffee">
+                            Black Coffee
+                        </a>
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="/teas">
+                            Teas
                         </a>
                     </nav>
+
+
                 </div>
                 <div className={'md:ml-12'}>
                     <h1 className={'font-medium text-xl pb-4 pt-5 md:pt-0'}>Contact Us</h1>
@@ -53,7 +66,8 @@ const Footer = () => {
                         >
                             muneebhaider564@gmail.com
                         </a>
-                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'} href="tel:+923011116259">
+                        <a className={'hover:text-backgroundColor transition-all cursor-pointer'}
+                           href="tel:+923011116259">
                             +92 301 111 6259
                         </a>
                         <div className={'flex gap-2'}>

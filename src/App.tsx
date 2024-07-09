@@ -15,6 +15,12 @@ import RegisterForm from "./pages/auth/RegisterForm";
 import Cart from "./compoents/cart/Cart";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ErrorPage from './pages/auth/ErrorForm';
+import Checkout from "./pages/checkout/Checkout";
+import PaymentSuccess from "./pages/checkout/PaymentSuccess";
+import PaymentFailure from "./pages/checkout/PaymentFailure";
+import ForgetPassword from "./pages/auth/ForgetPassword";
+import PasswordResetSent from "./pages/auth/PasswordResetSent";
 const App: React.FC = () => {
     const [cartCount, setCartCount] = useState(0);
     const [isItemInCart, setIsItemInCart] = useState(false);
@@ -55,13 +61,20 @@ const App: React.FC = () => {
             <ToastContainer position={"bottom-center"}/>
 
             <Routes>
-
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<LoginForm/>}/>
                 <Route path="/signup" element={<RegisterForm/>}/>
-                <Route path="/home" element={<Home />} index={true} />
-                <Route path="/menu" element={<Menu />} />
+                <Route path="/error" element={<ErrorPage />} />
+
+                <Route path="/menu" element={<Menu onAddToCart={handleAddToCart}/>} />
                 <Route path="/about" element={<About />} />
                 <Route path="/product" element={<Product onAddToCart={handleAddToCart} />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/payment-success" element={<PaymentSuccess />} />
+                <Route path="/payment-failure" element={<PaymentFailure />} />
+
+                <Route path="/forget" element={<ForgetPassword />} />
+                <Route path="/password-reset-sent" element={<PasswordResetSent />} />
 
                 <Route path="/review" element={<Review />} />
                 <Route path="/cart" element={<Cart />} />

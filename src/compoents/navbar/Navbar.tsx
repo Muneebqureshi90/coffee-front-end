@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, MouseEventHandler} from 'react';
 import {SiCoffeescript} from 'react-icons/si';
 import {Link as RouterLink, NavLink, useNavigate} from 'react-router-dom';
 import Button from "../../layouts/button/Button";
@@ -11,20 +11,33 @@ import NewspaperIcon from '@mui/icons-material/Newspaper';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import SettingsIcon from '@mui/icons-material/Settings';
+import {useSelector, useDispatch} from 'react-redux';// Import the useSelector hook from react-redux
 
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import {logout} from '../../redux/auth/AuthSlice';
+import AgricultureIcon from '@mui/icons-material/Agriculture';
 
 const Navbar = ({cartCount}: { cartCount: number }) => {
     const navigate = useNavigate();
     const [menu, setMenu] = useState(false);
-    const isLoggedIn = false; // Replace with your authentication logic
+// Assuming your auth slice has a 'user' field
+//     const isLoggedIn = useSelector((state: { user: { user: any, token: string } }) => !!state.user.token);
+    const isLoggedIn = useSelector((state: { user: { user: any, token: string } }) => !!state.user.token);
+    const dispatch = useDispatch();
+    ; // Assuming your auth slice has a 'user' field
     const [isDropdownOpen, setDropdownOpen] = useState(false);
 
     const handleDropdownToggle = () => {
         setDropdownOpen(!isDropdownOpen);
     };
-
+    const handleLogoutClick: MouseEventHandler<HTMLAnchorElement> = (event) => {
+        event.preventDefault(); // Prevent the default behavior of the anchor element
+        // Dispatch the signOut action to update the authentication state
+        dispatch(logout());
+        closeMenu1();
+        navigate('/');  // Navigate to the home page or wherever you want after logout
+    };
     const closeMenu1 = () => {
         setDropdownOpen(false);
     };
@@ -40,9 +53,7 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
         navigate('/login');
     };
 
-    const handleLogoutClick = () => {
-        navigate('/home');
-    };
+
     const handleSignupClick = () => {
         navigate('/signup');
     };
@@ -58,26 +69,28 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
                 <div
                     className="flex flex-row justify-between p-5 lg:px-38 px-5 bg-gradient-to-r from-brightColor to-backgroundColor shadow-md">
                     <div className="flex flex-row items-center cursor-pointer gap-2">
+                      
                         <span>
                             <SiCoffeescript size={30}/>
+                            {/*<AgricultureIcon fontSize="large"/>*/}
                         </span>
-                        <h1 className={'text-xl font-bold'}>Coffee With Me</h1>
+                        <h1 className={'text-xl font-bold'}>Coffee</h1>
                     </div>
                     <nav className={'hidden md:flex flex-row items-center text-lg font-medium gap-10'}>
-                        <NavLink to="/home"
+                        <NavLink to="/"
                                  className={'cursor-pointer group relative inline-block hover:text-brightColor'}
                                  onClick={handleHomeClick}>
                             <HomeIcon/> Home
                             <span
                                 className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>
                         </NavLink>
-                        <NavLink to="/menu"
-                                 className={'cursor-pointer group relative inline-block hover:text-brightColor'}
-                                 onClick={() => closeMenu()}>
-                            <NewspaperIcon/> Menu
-                            <span
-                                className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>
-                        </NavLink>
+                        {/*<NavLink to="/menu"*/}
+                        {/*         className={'cursor-pointer group relative inline-block hover:text-brightColor'}*/}
+                        {/*         onClick={() => closeMenu()}>*/}
+                        {/*    <NewspaperIcon/> Menu*/}
+                        {/*    <span*/}
+                        {/*        className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>*/}
+                        {/*</NavLink>*/}
                         <NavLink to="/about"
                                  className={'cursor-pointer group relative inline-block hover:text-brightColor'}
                                  onClick={() => closeMenu()}>
@@ -101,9 +114,9 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
                         </NavLink>
                     </nav>
                     {(!isLoggedIn && (
-                        <div className={'hidden lg:flex '}>
+                        <div className={'hidden lg:flex justify-between pl-3 '}>
                             <Button title="Login" onClick={handleLoginClick}/>
-                            <Button title="Signup" onClick={handleSignupClick}/>
+                            <Button  title="Signup" onClick={handleSignupClick}/>
                         </div>
                     ))}
 
@@ -153,12 +166,12 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
                                         className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>
                                 </NavLink>
                                 <div className="relative inline-block group">
-                                <NavLink
-                                        to="/home"
+                                    <NavLink
+                                        to="/"
                                         className="cursor-pointer hover:text-brightColor"
                                         onClick={handleDropdownToggle}
                                     >
-                                        <SettingsIcon  className=" text-gray-600" style={{ fontSize: '2.4rem' }}/> Setting
+                                        <SettingsIcon className=" text-gray-600" style={{fontSize: '2.4rem'}}/> Setting
                                         <span
                                             className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>
                                     </NavLink>
@@ -168,10 +181,11 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
                                             <NavLink
                                                 to="/login"
                                                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                                onClick={closeMenu1}
+                                                onClick={handleLogoutClick}
                                             >
                                                 <ExitToAppIcon className="mr-2"/> Logout
                                             </NavLink>
+
                                             <NavLink
                                                 to="/more-options"
                                                 className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -221,18 +235,18 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
 
                 <div
                     className={`${menu ? "translate-x-0" : "-translate-x-full"} lg:hidden flex flex-col absolute bg-black text-white left-0 top-16 font-semibold text-2xl content-center text-center pt-8 pb-4 gap-8 w-full h-fit transition duration-300`}>
-                    <NavLink to="/home" className={'cursor-pointer group relative inline-block hover:text-brightColor'}
+                    <NavLink to="/" className={'cursor-pointer group relative inline-block hover:text-brightColor'}
                              onClick={() => closeMenu()}>
                         <HomeIcon/> Home
                         <span
                             className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>
                     </NavLink>
-                    <NavLink to="/menu" className={'cursor-pointer group relative inline-block hover:text-brightColor'}
-                             onClick={() => closeMenu()}>
-                        <NewspaperIcon/> Menu
-                        <span
-                            className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>
-                    </NavLink>
+                    {/*<NavLink to="/menu" className={'cursor-pointer group relative inline-block hover:text-brightColor'}*/}
+                    {/*         onClick={() => closeMenu()}>*/}
+                    {/*    <NewspaperIcon/> Menu*/}
+                    {/*    <span*/}
+                    {/*        className="line absolute bottom-0 left-0 bg-black h-0.5 w-0 transition-width duration-300 ease-in-out group-hover:w-full"></span>*/}
+                    {/*</NavLink>*/}
                     <NavLink to="/about" className={'cursor-pointer group relative inline-block hover:text-brightColor'}
                              onClick={() => closeMenu()}>
                         <InfoIcon/> About Us
@@ -283,7 +297,7 @@ const Navbar = ({cartCount}: { cartCount: number }) => {
                             </NavLink>
                             <div className="relative inline-block group">
                                 <NavLink
-                                    to="/home"
+                                    to="/"
                                     className="cursor-pointer hover:text-brightColor"
                                     onClick={() => {
                                         handleDropdownToggle();

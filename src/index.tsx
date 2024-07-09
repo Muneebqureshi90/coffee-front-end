@@ -10,14 +10,9 @@ import store from "./redux/Store";
 import reportWebVitals from './reportWebVitals';
 
 // Define a type for global with an index signature
-declare global {
-    interface Window {
-        url: any; // Adjust the type accordingly
-    }
-}
 
 // Add the following line to polyfill the 'url' module
-window.url = require('url');
+
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement

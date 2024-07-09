@@ -10,7 +10,7 @@ import {useNavigate} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import {ThunkDispatch} from 'redux-thunk';
 import {AnyAction} from 'redux';
-import {toast, ToastContainer} from 'react-toastify';
+import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import {signUpUser} from "../../redux/auth/AuthSlice";
@@ -32,6 +32,7 @@ interface FormData {
 function RegisterForm() {
     const dispatch = useDispatch<ThunkDispatch<{}, {}, AnyAction>>();
     const navigate = useNavigate();
+    // const [formattedPhoneNumber, setFormattedPhoneNumber] = useState('+92');
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -69,6 +70,26 @@ function RegisterForm() {
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        // let value = e.target.value;
+        //
+        // // Validate and format phone number
+        // // Validate and format phone number
+        // if (e.target.name === "phoneNumber") {
+        //     // Remove non-numeric characters
+        //     value = value.replace(/\D/g, '');
+        //
+        //     // Ensure the number starts with "+92" only if it doesn't already have it
+        //     if (!value.startsWith("+92")) {
+        //         // Only add "+92" if the remaining part is not empty
+        //         value = value ? "+92" + value : "+92";
+        //     }
+        //
+        //     // Limit total digits to 12
+        //     value = value.slice(0, 12);
+        //
+        //     // Update the formatted phone number state
+        //     setFormattedPhoneNumber(value);
+        // }
         setFormData({
             ...formData,
             [e.target.name]: e.target.value,
@@ -173,6 +194,9 @@ function RegisterForm() {
                     toast.error('Incorrect data');
                 } else if (error.response.status === 404 || error.response.status === 400) {
                     toast.error(error.response.data.message || 'Something went wrong on the server');
+
+                    // Display server errors in the UI
+                    setErrors({...errors, serverError: error.response.data.message});
                 } else {
                     // Set serverError on other server errors
                     setErrors({...errors, serverError: 'Something went wrong on the server'});
@@ -259,8 +283,11 @@ function RegisterForm() {
                             variant="standard"
                             label="Phone number"
                             name="phoneNumber"
-                            value={formData.phoneNumber}
+                            value={formData.phoneNumber}  // Use the formatted phone number in the UI
                             onChange={handleChange}
+                            // InputProps={{
+                            //     startAdornment: <InputAdornment position="start">+92</InputAdornment>,
+                            // }}
                         />
                         {errors.phoneNumber &&
                             <div className="invalid-feedback text-red-900">{errors.phoneNumber}</div>}

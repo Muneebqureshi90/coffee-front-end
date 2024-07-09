@@ -6,7 +6,7 @@ import { FaQuoteRight } from "react-icons/fa"; // Import the correct quote icon
 interface ReviewCardProps {
     img: string;
     title: string;
-
+    description:string;
 }
 
 const ReviewCard: React.FC<ReviewCardProps> = (props) => {
@@ -32,9 +32,9 @@ const ReviewCard: React.FC<ReviewCardProps> = (props) => {
 
             </div>
             <p className={''}>
-                I recently tried the special blend of coffee at Coffee With Me, and it was an amazing experience. The rich aroma and bold flavor left a lasting impression. The cozy ambiance of the cafe made it the perfect spot to enjoy a cup of coffee. I highly recommend trying their coffee – it's a delightful treat for any coffee enthusiast!
+                {/*"Urban Farming's products have completely transformed my approach to sustainable living. Their fresh and organic crops are a testament to their commitment to quality and environmental stewardship. Each harvest brings forth a bounty of vibrant flavors and nutritional goodness, making every meal a wholesome delight. I've never tasted produce quite like theirs – it's like nature's goodness on a plate. Urban Farming has truly set the bar high for ethical and eco-friendly agriculture, and I couldn't be more impressed with their dedication to nourishing both people and the planet."            */}
+                {props.description}
             </p>
-
         </div>
     );
 };
